@@ -1,0 +1,113 @@
+{%extends 'base.html'%}
+
+{% block content %}
+{% include "inc/nav.html" %}
+<div class="container">
+    <div class="row">
+      
+        <div class="col-md-4">
+          <h4>Input Predict Data</h4>
+<form method="post">
+  {% csrf_token %}
+    <div class="form-group">
+      <label for="date">Date</label>
+      <input type="date" class="form-control" id="date" name="date" aria-describedby="date" placeholder="Date">
+    </div>
+    <div class="form-group">
+        <label for="exampleFormControlSelect1">Select Category</label>
+        <select class="form-control" name="activity" id="activity">
+          <option value="food" selected>Food</option>
+          <option value="travel">Travel</option>
+          <option value="clothes">Clothes</option>
+          <option vlaue="homeutility">HomeUtility</option>
+          <option value="hospital">Hospital</option>
+        </select>
+      </div>
+      
+    <button type="submit" class="btn btn-primary" id="predict">Submit</button>
+  </form>
+  <div class="alert alert-success" role="alert" id="pre" style="margin-top: 10px;">Predict Expences Here</div>
+
+</div>
+
+<div class="col-md-4">
+  
+  <h4>Data Sets Demo</h4>
+  <center>  <div class="btn btn-lg btn-outline-success"  id="train" style="align-items: center;">Train Data Before Predict</div>
+  </center>
+
+</div>
+<div class="col-md-4">
+  
+  <h4>Test Accuracy Here</h4>
+  <div class="alert alert-success" role="alert" id="acc">Train Accuracy Here</div>
+</div>
+</div>
+</div>
+
+{%endblock%}
+
+{% block jquery%}
+
+
+
+<script>
+  $("#predict").click(function(e){
+    e.preventDefault();
+  var endpoint = '/predict_data/'
+  var date = $("#date").val();
+  var category = $("#activity").val();
+  
+  $.ajax({
+    method : "GET",
+    url : endpoint,
+    data:{
+      "date":date,
+      "category":category
+    },
+    success:function(data){
+     pred = data
+      // string_labels = JSON.stringify(labels)
+      // string_accuracy = JSON.stringify(accuracy)
+    document.getElementById("pre").innerHTML = "Your Expences is => "+pred.prediction_result
+  
+     console.log(pred)
+    },
+    error:function(error_data){
+      console.log("error")
+      console.log(error_data)
+    }
+  
+  });
+  
+  });
+  </script>
+  <script>
+    $("#train").click(function(){
+    
+    var endpoint = '/train/'
+    
+    $.ajax({
+      method : "GET",
+      url : endpoint,
+      data:{
+        hello : 'hello'
+      },
+      success:function(data){
+       acc = data
+        // string_labels = JSON.stringify(labels)
+        // string_accuracy = JSON.stringify(accuracy)
+      document.getElementById("acc").innerHTML ="Model Accuracy => "+ acc.accuracy
+    
+       console.log(acc)
+      },
+      error:function(error_data){
+        console.log("error")
+        console.log(error_data)
+      }
+    
+    });
+    
+    });
+    </script>
+{%endblock%}
